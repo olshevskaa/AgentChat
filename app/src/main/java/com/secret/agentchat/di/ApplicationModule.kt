@@ -4,17 +4,35 @@ import com.secret.agentchat.data.api.RetrofitClient
 import com.secret.agentchat.data.crypto.CryptoHelper
 import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.data.keystore.KeyStoreHelper
+import com.secret.agentchat.data.repositories.AuthRepoImpl
+import com.secret.agentchat.data.repositories.ChatRepoImpl
+import com.secret.agentchat.data.repositories.MessageRepoImpl
+import com.secret.agentchat.data.repositories.UserRepoImpl
+import com.secret.agentchat.domain.repositories.AuthRepo
+import com.secret.agentchat.domain.repositories.ChatRepo
+import com.secret.agentchat.domain.repositories.MessageRepo
+import com.secret.agentchat.domain.repositories.UserRepo
 import org.koin.dsl.module
 import java.security.KeyStore
 
 val applicationModule = module {
     factory { KeyStore.getInstance("AndroidKeyStore").apply { load(null) } }
 
-    factory { RetrofitClient.api }
+    factory { RetrofitClient(get()).authService }
+
+    factory { RetrofitClient(get()).apiService }
 
     factory { KeyStoreHelper(get()) }
 
     factory { SharedPref(get()) }
 
     factory { CryptoHelper(get()) }
+
+    factory<AuthRepo> { AuthRepoImpl(get()) }
+
+    factory<UserRepo> { UserRepoImpl(get()) }
+
+    factory<MessageRepo> { MessageRepoImpl(get(), get(), get()) }
+
+    factory<ChatRepo> { ChatRepoImpl(get()) }
 }

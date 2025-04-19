@@ -13,7 +13,7 @@ fun NavigationRoot() {
     NavHost(navController = navController, startDestination = Routes.ChatList){
         composable<Routes.ChatList>{
             ChatListScreen(
-                toRoom = {  }
+                toChat = {  }
             )
         }
     }

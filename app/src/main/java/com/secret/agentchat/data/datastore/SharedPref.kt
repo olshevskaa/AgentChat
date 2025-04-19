@@ -23,15 +23,21 @@ class SharedPref(
         }
     }
 
-    fun getToken(): Flow<String> {
+    fun getToken(): Flow<String?> {
         val key = stringPreferencesKey(TOKEN_KEY)
         return context.dataStore.data.map { preferences ->
-            preferences[key] ?: DEFAULT_TOKEN
+            preferences[key]
+        }
+    }
+
+    fun getUserId(): Flow<String?> {
+        val key = stringPreferencesKey(TOKEN_KEY)
+        return context.dataStore.data.map { preferences ->
+            preferences[key]
         }
     }
 
     companion object{
         private const val TOKEN_KEY = "token"
-        private const val DEFAULT_TOKEN = ""
     }
 }

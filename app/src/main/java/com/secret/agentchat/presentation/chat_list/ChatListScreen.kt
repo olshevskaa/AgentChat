@@ -7,18 +7,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.secret.agentchat.presentation.chat_list.components.ChatListItem
 import com.secret.agentchat.presentation.chat_list.components.ChatListTopBar
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ChatListScreen(
-    toRoom: (String) -> Unit,
+    toChat: (String) -> Unit,
+    toSearch: () -> Unit,
+    viewModel: ChatListViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    
     Scaffold(
         topBar = {
             ChatListTopBar(
-                onSearchClick = { /* Handle search click */ }
+                onSearchClick = toSearch
             )
         },
     ) { paddingValues ->
@@ -28,28 +35,13 @@ fun ChatListScreen(
                 .padding(paddingValues)
         ) {
             LazyColumn {
-                items(getSampleChats()) { chat ->
+                items(state.chats) { chat ->
                     ChatListItem(
                         chat = chat,
-                        onClick = { toRoom(chat.id) }
+                        onClick = { toChat(chat.id) }
                     )
                 }
             }
         }
     }
-}
-
-data class ChatPreview(
-    val id: String,
-    val name: String,
-    val lastMessage: String,
-    val timestamp: String
-)
-
-fun getSampleChats(): List<ChatPreview> {
-    return listOf(
-        ChatPreview("1", "Alice", "Hey, how are you?", "10:30 AM"),
-        ChatPreview("2", "Bob", "Did you see the latest update?", "Yesterday"),
-        ChatPreview("3", "Charlie", "Let's meet tomorrow", "2 days ago")
-    )
 }

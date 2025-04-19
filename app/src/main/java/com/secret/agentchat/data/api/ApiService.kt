@@ -1,30 +1,50 @@
 package com.secret.agentchat.data.api
 
+import com.secret.agentchat.domain.responses.ChatResponse
+import com.secret.agentchat.domain.requests.CreateChatRequest
 import com.secret.agentchat.domain.requests.LoginRequest
 import com.secret.agentchat.domain.requests.RegisterRequest
 import com.secret.agentchat.domain.requests.SendMessageRequest
-import com.secret.agentchat.domain.responses.AuthResponse
+import com.secret.agentchat.domain.responses.LoginResponse
 import com.secret.agentchat.domain.responses.MessageResponse
+import com.secret.agentchat.domain.responses.RegisterResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
 
     @POST("auth/register")
-    suspend fun register(@Body body: RegisterRequest): Response<AuthResponse>
+    suspend fun register(@Body body: RegisterRequest): Response<RegisterResponse>
 
     @POST("auth/login")
-    suspend fun login(@Body body: LoginRequest): Response<AuthResponse>
+    suspend fun login(@Body body: LoginRequest): Response<LoginResponse>
 
-    @GET("messages")
-    suspend fun getMessages(@Header("Authorization") token: String): Response<List<MessageResponse>>
+    @GET("messages/{chatId}")
+    suspend fun getMessages(
+        @Path("chatId") chatId: String
+    ): Response<List<MessageResponse>>
 
     @POST("messages/send")
     suspend fun sendMessage(
-        @Header("Authorization") token: String,
         @Body body: SendMessageRequest
-    ): Response<Any>
+    ): Response<MessageResponse>
+
+    @POST("chats/create")
+    suspend fun createChat(
+        @Body body: CreateChatRequest
+    ): Response<ChatResponse>
+
+    @GET("chats/user/{userId}")
+    suspend fun getChats(
+        @Path("userId") userId: String
+    ): Response<List<ChatResponse>>
+
+    @GET("users/{id}")
+    suspend fun getUser(
+        @Path("id") userId: String
+    ): Response<ChatResponse>
+
 }

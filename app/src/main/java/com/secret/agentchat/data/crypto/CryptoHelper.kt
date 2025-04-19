@@ -6,37 +6,33 @@ import com.secret.agentchat.domain.models.SendMessageParams
 import com.secret.agentchat.domain.requests.SendMessageRequest
 import com.secret.agentchat.domain.responses.MessageResponse
 import com.secret.agentchat.domain.utils.toMessage
+import java.time.Instant
 import java.util.Base64
 
 class CryptoHelper(
     private val keyStore: KeyStoreHelper
 ) {
-    fun decryptMessages(response: List<MessageResponse>): List<Message> {
+fun decryptMessage(message: MessageResponse): String? {
         try {
-            val privateKey = keyStore.getPrivateKey(response.first().recipient)
-            if (privateKey == null) emptyList<Message>()
-
-            return response.map { message ->
+            val privateKey = keyStore.getPrivateKey(message.recipient)
+            privateKey?.let {
                 val aesKeyBytes = RSAUtils.decryptWithPrivateKey(
                     Base64.getDecoder().decode(message.encryptedAESKey),
-                    privateKey!!
+                    privateKey
                 )
 
                 val aesKey = AESUtils.keyFromBase64(Base64.getEncoder().encodeToString(aesKeyBytes))
 
                 val decryptedText = AESUtils.decrypt(
                     encryptedData = message.encryptedMessage,
-                    iv = message.encryptedMessage.substring(
-                        0,
-                        24
-                    ), // IV extraction strategy (adjust if you store IV separately)
+                    iv = message.encryptedMessage.substring(0, 24),
                     key = aesKey
                 )
-                message.toMessage(decryptedText)
-            }
+                return decryptedText
+            } ?: return null
 
         } catch (e: Exception) {
-            return emptyList<Message>()
+            return null
         }
     }
 
@@ -57,10 +53,13 @@ class CryptoHelper(
                 val signature = SignatureUtils.sign(encryptedMessage, key)
 
                 SendMessageRequest(
-                    recipientId = params.recipientId,
+                    chatId = params.chatId,
+                    senderId = params.userId,
                     encryptedMessage = encryptedMessage,
                     encryptedAESKey = encryptedAESKey,
-                    signature = signature
+                    signature = signature,
+                    ephemeral = false,
+                    createdAt = Instant.now().toEpochMilli().toString()
                 )
             }
         } catch (e: Exception) {

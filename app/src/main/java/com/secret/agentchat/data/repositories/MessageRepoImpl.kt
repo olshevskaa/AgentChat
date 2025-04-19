@@ -6,34 +6,38 @@ import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.domain.models.Message
 import com.secret.agentchat.domain.models.SendMessageParams
 import com.secret.agentchat.domain.repositories.MessageRepo
+import com.secret.agentchat.domain.responses.MessageResponse
+import com.secret.agentchat.domain.utils.toMessage
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 
 class MessageRepoImpl(
     private val api: ApiService,
-    private val sharedPref: SharedPref,
     val crypto: CryptoHelper
 ) : MessageRepo {
 
-    override suspend fun getMessages(token: String, userId: String): List<Message> {
+    override suspend fun getMessages(chatId: String): List<Message?> {
         try {
-            val token = sharedPref.getToken().filter { it.isNotEmpty() }.first()
-            val response = api.getMessages("Bearer $token")
-            if (!response.isSuccessful) throw Exception("Failed to get messages: ${response.message()}")
-            return crypto.decryptMessages(response.body()?: emptyList())
+            val response = api.getMessages(chatId)
+            if (!response.isSuccessful) return emptyList()
+            response.body()?.let { messages ->
+                return messages.map {
+                    val decryptedMessage = crypto.decryptMessage(it)
+                    it.toMessage(decryptedMessage.toString())
+                }
+            } ?: return emptyList()
         }catch(e: Exception) {
             return emptyList()
         }
     }
 
-    override suspend fun sendMessage(params: SendMessageParams): Any? {
+    override suspend fun sendMessage(params: SendMessageParams): MessageResponse? {
         try {
-            val token = sharedPref.getToken().filter { it.isNotEmpty() }.first()
             val request = crypto.encryptMessage(params)
             request?.let {
-                val response = api.sendMessage("Bearer $token", request)
-                if (!response.isSuccessful) throw Exception("Failed to send message: ${response.message()}")
-                return response.body() ?: Unit
+                val response = api.sendMessage(request)
+                if (!response.isSuccessful) return null
+                return response.body()
             } ?: return null
         }catch(e: Exception){
             return null

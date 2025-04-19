@@ -1,5 +1,5 @@
 package com.secret.agentchat.domain.repositories
 
 interface UserRepo {
-    suspend fun getUserDetails(userId: String): String
+    suspend fun getUser(userId: String): String
 }

@@ -1,17 +1,13 @@
 package com.secret.agentchat.domain.responses
 
 data class MessageResponse(
-    val _id: String,
-    val sender: SenderInfo,
+    val id: String,
+    val chatId: String,
+    val sender: String,
     val recipient: String,
     val encryptedMessage: String,
     val encryptedAESKey: String,
     val signature: String,
-    val createdAt: String,
-    val expiresAt: String?
-)
-
-data class SenderInfo(
-    val _id: String,
-    val username: String
+    val ephemeral: Boolean,
+    val createdAt: String
 )
