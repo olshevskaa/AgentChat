@@ -45,6 +45,7 @@ class RetrofitClient(private val sharedPref: SharedPref) {
     }
 
     companion object{
-        private const val BASE_URL = "http://10.0.2.2:5000/" // replace with your IP
+        const val BASE_URL = "http://10.0.2.2:5000/" // replace with your IP
+        const val WS_URL = "ws://10.0.2.2:5000/"
     }
 }

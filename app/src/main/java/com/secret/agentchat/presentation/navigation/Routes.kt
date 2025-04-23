@@ -6,7 +6,7 @@ sealed class Routes {
     @Serializable
     data object ChatList: Routes()
     @Serializable
-    data class ChatRoom(val userId: String): Routes()
+    data class Chat(val userId: String? = null, val chatId: String? = null): Routes()
     @Serializable
     data object SearchUser: Routes()
     @Serializable

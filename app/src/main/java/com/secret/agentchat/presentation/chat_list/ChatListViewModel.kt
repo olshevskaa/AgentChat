@@ -19,7 +19,7 @@ class ChatListViewModel(
     private val chatRepo: ChatRepo
 ) : ViewModel() {
 
-    private val _eventChannel = Channel<LoginEvents>()
+    private val _eventChannel = Channel<ChatListEvents>()
     val events = _eventChannel.receiveAsFlow()
 
     private val _state = MutableStateFlow(ChatListState())
@@ -38,7 +38,7 @@ class ChatListViewModel(
             if(chats != null){
                 _state.update { state -> state.copy(chats = chats) }
             }else{
-                _eventChannel.send(LoginEvents.Failure(UiText.StringResource(R.string.unable_to_fetch)))
+                _eventChannel.send(ChatListEvents.Failure(UiText.StringResource(R.string.unable_to_fetch)))
             }
             _state.update { state -> state.copy(isLoading = false) }
         }

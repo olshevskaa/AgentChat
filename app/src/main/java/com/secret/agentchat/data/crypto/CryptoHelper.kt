@@ -1,11 +1,9 @@
 package com.secret.agentchat.data.crypto
 
 import com.secret.agentchat.data.keystore.KeyStoreHelper
-import com.secret.agentchat.domain.models.Message
 import com.secret.agentchat.domain.models.SendMessageParams
 import com.secret.agentchat.domain.requests.SendMessageRequest
 import com.secret.agentchat.domain.responses.MessageResponse
-import com.secret.agentchat.domain.utils.toMessage
 import java.time.Instant
 import java.util.Base64
 

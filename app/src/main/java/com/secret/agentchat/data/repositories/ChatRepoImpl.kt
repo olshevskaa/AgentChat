@@ -7,7 +7,7 @@ import com.secret.agentchat.domain.models.ChatPreview
 import com.secret.agentchat.domain.repositories.ChatRepo
 import com.secret.agentchat.domain.requests.CreateChatRequest
 import com.secret.agentchat.domain.responses.ChatResponse
-import com.secret.agentchat.domain.utils.toChatPreview
+import com.secret.agentchat.domain.utils.mappers.toChatPreview
 import kotlinx.coroutines.flow.first
 
 class ChatRepoImpl(

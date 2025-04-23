@@ -8,7 +8,13 @@ class UserRepoImpl(
     private val api: ApiService
 ) : UserRepo {
     override suspend fun getUser(userId: String): User? {
-        return null
+        try {
+            val response = api.getUser(userId)
+            if(response.isSuccessful) return response.body()
+            return null
+        }catch(e: Exception) {
+            return null
+        }
     }
 
     override suspend fun searchUsers(query: String): List<User>? {

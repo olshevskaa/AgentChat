@@ -24,6 +24,7 @@ fun AgentTextField(
     keyBoardType: KeyboardType = KeyboardType.Text,
     label: String,
     isCounterEnabled: Boolean = false,
+
     maxLength: Int = 30,
     maxLines: Int = 1
 ) {

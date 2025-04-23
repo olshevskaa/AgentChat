@@ -1,6 +1,9 @@
 package com.secret.agentchat.di
 
+import android.os.Build
+import com.secret.agentchat.data.api.ChatWebSocketListener
 import com.secret.agentchat.data.api.RetrofitClient
+import com.secret.agentchat.data.api.WebSocketClient
 import com.secret.agentchat.data.crypto.CryptoHelper
 import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.data.keystore.KeyStoreHelper
@@ -12,6 +15,9 @@ import com.secret.agentchat.domain.repositories.AuthRepo
 import com.secret.agentchat.domain.repositories.ChatRepo
 import com.secret.agentchat.domain.repositories.MessageRepo
 import com.secret.agentchat.domain.repositories.UserRepo
+import com.secret.agentchat.domain.utils.validators.EmailPatternValidator
+import com.secret.agentchat.domain.utils.validators.PatternValidator
+import okhttp3.WebSocketListener
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import java.security.KeyStore
@@ -36,4 +42,10 @@ val applicationModule = module {
     factory<MessageRepo> { MessageRepoImpl(get(), get()) }
 
     factory<ChatRepo> { ChatRepoImpl(get(), get(), get()) }
+
+    single<PatternValidator>{ EmailPatternValidator }
+
+    single<WebSocketListener>{ ChatWebSocketListener() }
+
+    single<WebSocketClient>{ WebSocketClient(RetrofitClient.WS_URL) }
 }

@@ -21,6 +21,6 @@ val viewModule = module {
     }
 
     viewModel {
-        RegisterViewModel(get())
+        RegisterViewModel(get(), get())
     }
 }

@@ -23,11 +23,6 @@ interface ApiService {
         @Path("chatId") chatId: String
     ): Response<List<MessageResponse>>
 
-    @POST("messages/send")
-    suspend fun sendMessage(
-        @Body body: SendMessageRequest
-    ): Response<MessageResponse>
-
     @POST("chats/create")
     suspend fun createChat(
         @Body body: CreateChatRequest
@@ -41,7 +36,7 @@ interface ApiService {
     @GET("users/{id}")
     suspend fun getUser(
         @Path("id") userId: String
-    ): Response<ChatResponse>
+    ): Response<User>
 
     @GET("users/search")
     suspend fun searchUsers(

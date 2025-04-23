@@ -1,5 +1,8 @@
 package com.secret.agentchat.domain.responses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MessageResponse(
     val id: String,
     val chatId: String,

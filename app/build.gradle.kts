@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.junit5)
 }
 
 android {
@@ -17,6 +18,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
     }
 
     buildTypes {
@@ -62,12 +69,14 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.kotlin.serialization.json)
 
+    testImplementation(libs.junit5.api)
+    testRuntimeOnly(libs.junit5.engine)
+    testImplementation(libs.junit5.params)
+    androidTestImplementation(libs.junit5.android.test.compose)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk)
+    testImplementation(libs.assertk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.coroutines.test)
 }

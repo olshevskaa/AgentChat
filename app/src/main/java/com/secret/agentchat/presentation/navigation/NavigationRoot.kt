@@ -39,7 +39,6 @@ fun NavigationRoot() {
         composable<Routes.SignUp>{
             RegisterScreenRoot(
                 onSignUpSuccess = { navController.navigate(Routes.ChatList) },
-                onLoginClick = { navController.navigate(Routes.Login) }
             )
         }
     }

@@ -14,9 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.secret.agentchat.core.presentation.ErrorSnackBar
 import com.secret.agentchat.core.presentation.ObserveAsEvents
+import com.secret.agentchat.presentation.chat.ChatListViewModel
 import com.secret.agentchat.presentation.chat_list.components.ChatListItem
 import com.secret.agentchat.presentation.chat_list.components.ChatListTopBar
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -31,9 +34,18 @@ fun ChatListScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    ObserveAsEvents(viewModel.) { }
+    ObserveAsEvents(viewModel.events) { event ->
+        when(event){
+            is ChatListEvents.Failure -> {
+                scope.launch {
+                    snackBarHostState.showSnackbar(event.message.asString(context))
+                }
+            }
+        }
+    }
     
     Scaffold(
+        snackbarHost = { ErrorSnackBar(snackBarHostState) },
         topBar = {
             ChatListTopBar(
                 onSearchClick = toSearch

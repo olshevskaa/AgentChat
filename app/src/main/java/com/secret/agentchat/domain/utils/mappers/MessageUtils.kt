@@ -1,4 +1,4 @@
-package com.secret.agentchat.domain.utils
+package com.secret.agentchat.domain.utils.mappers
 
 import com.secret.agentchat.domain.models.Message
 import com.secret.agentchat.domain.responses.MessageResponse

@@ -15,4 +15,10 @@
     <string name="unable_to_register">Unable to register</string>
     <string name="unable_to_login">Unable to login</string>
     <string name="profile_icon_description">Profile icon</string>
+    <string name="at_least_x_characters">At least %d characters</string>
+    <string name="at_least_one_number">At least one number</string>
+    <string name="contains_lowercase_character">Contains lowercase character</string>
+    <string name="contains_uppercase_character">Contains uppercase character</string>
+    <string name="send_message">Send message</string>
+    <string name="message">Message</string>
 </resources>
