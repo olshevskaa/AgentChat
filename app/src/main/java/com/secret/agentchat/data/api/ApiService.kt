@@ -1,5 +1,6 @@
 package com.secret.agentchat.data.api
 
+import com.secret.agentchat.domain.models.User
 import com.secret.agentchat.domain.responses.ChatResponse
 import com.secret.agentchat.domain.requests.CreateChatRequest
 import com.secret.agentchat.domain.requests.LoginRequest
@@ -13,14 +14,9 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
-
-    @POST("auth/register")
-    suspend fun register(@Body body: RegisterRequest): Response<RegisterResponse>
-
-    @POST("auth/login")
-    suspend fun login(@Body body: LoginRequest): Response<LoginResponse>
 
     @GET("messages/{chatId}")
     suspend fun getMessages(
@@ -46,5 +42,10 @@ interface ApiService {
     suspend fun getUser(
         @Path("id") userId: String
     ): Response<ChatResponse>
+
+    @GET("users/search")
+    suspend fun searchUsers(
+        @Query("username") username: String
+    ): Response<List<User>>
 
 }

@@ -9,4 +9,8 @@ sealed class Routes {
     data class ChatRoom(val userId: String): Routes()
     @Serializable
     data object SearchUser: Routes()
+    @Serializable
+    data object Login: Routes()
+    @Serializable
+    data object SignUp: Routes()
 }

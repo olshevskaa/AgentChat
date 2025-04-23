@@ -12,6 +12,7 @@ import com.secret.agentchat.domain.repositories.AuthRepo
 import com.secret.agentchat.domain.repositories.ChatRepo
 import com.secret.agentchat.domain.repositories.MessageRepo
 import com.secret.agentchat.domain.repositories.UserRepo
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import java.security.KeyStore
 
@@ -24,15 +25,15 @@ val applicationModule = module {
 
     factory { KeyStoreHelper(get()) }
 
-    factory { SharedPref(get()) }
+    factory { SharedPref(androidContext()) }
 
     factory { CryptoHelper(get()) }
 
-    factory<AuthRepo> { AuthRepoImpl(get()) }
+    factory<AuthRepo> { AuthRepoImpl(get(), get(), get()) }
 
     factory<UserRepo> { UserRepoImpl(get()) }
 
-    factory<MessageRepo> { MessageRepoImpl(get(), get(), get()) }
+    factory<MessageRepo> { MessageRepoImpl(get(), get()) }
 
-    factory<ChatRepo> { ChatRepoImpl(get()) }
+    factory<ChatRepo> { ChatRepoImpl(get(), get(), get()) }
 }

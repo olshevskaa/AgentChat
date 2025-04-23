@@ -31,13 +31,14 @@ class SharedPref(
     }
 
     fun getUserId(): Flow<String?> {
-        val key = stringPreferencesKey(TOKEN_KEY)
+        val key = stringPreferencesKey(USER_ID_KEY)
         return context.dataStore.data.map { preferences ->
             preferences[key]
         }
     }
 
     companion object{
-        private const val TOKEN_KEY = "token"
+        const val TOKEN_KEY = "token"
+        const val USER_ID_KEY = "user_id"
     }
 }

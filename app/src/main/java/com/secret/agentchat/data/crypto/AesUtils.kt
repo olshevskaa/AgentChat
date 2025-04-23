@@ -1,5 +1,6 @@
 package com.secret.agentchat.data.crypto
 
+import java.security.Key
 import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
@@ -37,5 +38,5 @@ object AESUtils {
         return SecretKeySpec(bytes, 0, bytes.size, "AES")
     }
 
-    fun toBase64(key: SecretKey): String = Base64.getEncoder().encodeToString(key.encoded)
+    fun toBase64(key: Key): String = Base64.getEncoder().encodeToString(key.encoded)
 }

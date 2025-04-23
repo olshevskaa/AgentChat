@@ -7,10 +7,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitClient(val sharedPref: SharedPref) {
+class RetrofitClient(private val sharedPref: SharedPref) {
 
     private val authInterceptor = AuthInterceptor {
-        sharedPref.getToken().first()
+        sharedPref.getToken().first().toString()
     }
 
     private val client = OkHttpClient.Builder()
@@ -45,6 +45,6 @@ class RetrofitClient(val sharedPref: SharedPref) {
     }
 
     companion object{
-        private const val BASE_URL = "http://your_ip:5000/" // replace with your IP
+        private const val BASE_URL = "http://10.0.2.2:5000/" // replace with your IP
     }
 }
