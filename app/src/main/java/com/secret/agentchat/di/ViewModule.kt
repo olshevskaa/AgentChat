@@ -1,5 +1,6 @@
 package com.secret.agentchat.di
 
+import com.secret.agentchat.presentation.chat.ChatViewModel
 import com.secret.agentchat.presentation.chat_list.ChatListViewModel
 import com.secret.agentchat.presentation.login.LoginViewModel
 import com.secret.agentchat.presentation.register.RegisterViewModel
@@ -22,5 +23,9 @@ val viewModule = module {
 
     viewModel {
         RegisterViewModel(get(), get())
+    }
+
+    viewModel {
+        ChatViewModel(get(), get())
     }
 }

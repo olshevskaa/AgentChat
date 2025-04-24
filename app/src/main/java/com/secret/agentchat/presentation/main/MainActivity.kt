@@ -12,10 +12,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.secret.agentchat.data.api.ChatWebSocketListener
+import com.secret.agentchat.data.api.WebSocketClient
 import com.secret.agentchat.presentation.navigation.NavigationRoot
 import com.secret.agentchat.ui.theme.AgentChatTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    private val chatListener: ChatWebSocketListener by inject()
+    private val websocketClient: WebSocketClient by inject()
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,5 +34,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        websocketClient.connect(chatListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        websocketClient.close()
     }
 }

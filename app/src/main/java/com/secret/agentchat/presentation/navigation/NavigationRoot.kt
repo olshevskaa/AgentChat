@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.secret.agentchat.presentation.chat.ChatScreenRoot
 import com.secret.agentchat.presentation.chat_list.ChatListScreen
 import com.secret.agentchat.presentation.login.LoginScreen
 import com.secret.agentchat.presentation.login.LoginScreenRoot
@@ -39,6 +40,13 @@ fun NavigationRoot() {
         composable<Routes.SignUp>{
             RegisterScreenRoot(
                 onSignUpSuccess = { navController.navigate(Routes.ChatList) },
+            )
+        }
+
+        composable<Routes.Chat>{
+            ChatScreenRoot(
+                goBack = { navController.popBackStack() },
+
             )
         }
     }

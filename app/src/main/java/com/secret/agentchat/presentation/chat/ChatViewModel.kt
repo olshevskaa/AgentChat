@@ -15,22 +15,27 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.secret.agentchat.R
+import com.secret.agentchat.data.api.ChatWebSocketListener
 import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.domain.models.SendMessageParams
+import com.secret.agentchat.domain.models.User
 import com.secret.agentchat.domain.repositories.MessageRepo
 import com.secret.agentchat.domain.repositories.UserRepo
+import com.secret.agentchat.domain.usecases.SendMessageUseCase
 import com.secret.agentchat.presentation.chat_list.ChatListEvents
 import com.secret.agentchat.presentation.chat_list.ChatListState
 import com.secret.agentchat.presentation.navigation.Routes.Chat
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 
 class ChatViewModel(
-    private val chatRepo: ChatRepo,
     private val messagesRepo: MessageRepo,
     private val userRepo: UserRepo,
     private val savedStateHandle: SavedStateHandle,
-    private val sharedPref: SharedPref
+    private val sharedPref: SharedPref,
+    private val chatListener: ChatWebSocketListener,
+    private val sendMessageUseCase: SendMessageUseCase
 ) : ViewModel() {
 
     private val _eventChannel = Channel<ChatEvents>()
@@ -43,6 +48,7 @@ class ChatViewModel(
 
     init {
         setup()
+        observeMessages()
     }
 
     fun onAction(action: ChatAction){
@@ -50,39 +56,56 @@ class ChatViewModel(
             is ChatAction.SendMessage -> {
                 viewModelScope.launch {
                     withContext(Dispatchers.IO) {
-                        val params = SendMessageParams()
-                        messagesRepo.sendMessage(action.message, action.chatId)
+                        val currentState = state.value
+                        val params = SendMessageParams(
+                            chatId = currentState.chatId,
+                            userId = currentState.userId,
+                            recipientId = currentState.chatPartner.id,
+                            message = action.message,
+                            recipientPublicKey = currentState.chatPartner.publicKey
+                        )
+                        sendMessageUseCase.execute(params)
+                        _state.update { state -> state.copy(messages = state.) }
                     }
-                    _eventChannel.send(ChatEvents.MessageSent)
                 }
             }
             is ChatAction.UpdateMessage -> { _state.update { state -> state.copy(currentMessage = action.newMessage) } }
         }
     }
 
+    private fun observeMessages(){
+        viewModelScope.launch {
+            chatListener.messages.collectLatest {
+                _state.update { state -> state.copy(messages = it) }
+            }
+        }
+    }
+
     private fun setup(){
         viewModelScope.launch {
-            _state.update { state -> state.copy(isChatLoading = true) }
-            val user = async(Dispatchers.IO){
-                chatArgs.userId?.let{
-                    userRepo.getUser(it)
-                }
+            _state.update { state ->
+                state.copy(
+                    isChatLoading = true,
+                    chatId = chatArgs.chatId
+                )
+            }
+
+            val chatPartner = async(Dispatchers.IO){
+                userRepo.getUser(chatArgs.recipientId) ?: User.EmptyUser
             }
 
             val messages = async(Dispatchers.IO){
-                chatArgs.chatId?.let{
-                    messagesRepo.getMessages(it)
-                } ?: emptyList()
+                messagesRepo.getMessages(chatArgs.chatId)
             }
 
-            val myId = async(Dispatchers.IO){
+            val userId = async(Dispatchers.IO){
                 sharedPref.getUserId().first().toString()
             }
 
             _state.update { state ->
                 state.copy(
-                    myId = myId.await(),
-                    chatPartner = user.await(),
+                    userId = userId.await(),
+                    chatPartner = chatPartner.await(),
                     messages = messages.await(),
                     isChatLoading = false
                 )

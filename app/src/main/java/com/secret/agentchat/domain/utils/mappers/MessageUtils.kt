@@ -9,5 +9,4 @@ fun MessageResponse.toMessage(decryptedText: String) = Message(
     senderId = sender,
     text = decryptedText,
     timestamp = createdAt,
-    signature = signature
 )
