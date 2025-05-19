@@ -12,20 +12,26 @@ import com.secret.agentchat.presentation.register.RegisterScreenRoot
 import com.secret.agentchat.presentation.search_user.SearchUserScreen
 
 @Composable
-fun NavigationRoot() {
+fun NavigationRoot(token: String) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.SearchUser){
+    val startRoute = if(token.isNotBlank()) Routes.ChatList else Routes.Login
+
+    NavHost(navController = navController, startDestination = startRoute){
         composable<Routes.ChatList>{
             ChatListScreen(
-                toChat = {  },
+                toChat = { userId, chatId ->
+                    navController.navigate(Routes.Chat(chatId = chatId, recipientId = userId))
+                },
                 toSearch = { navController.navigate(Routes.SearchUser) }
             )
         }
 
         composable<Routes.SearchUser>{
             SearchUserScreen(
-                toChat = {  },
+                toChat = { userId, chatId ->
+                    navController.navigate(Routes.Chat(chatId = chatId, recipientId = userId))
+                },
                 goBack = { navController.popBackStack() }
             )
         }
@@ -45,8 +51,7 @@ fun NavigationRoot() {
 
         composable<Routes.Chat>{
             ChatScreenRoot(
-                goBack = { navController.popBackStack() },
-
+                goBack = { navController.popBackStack() }
             )
         }
     }

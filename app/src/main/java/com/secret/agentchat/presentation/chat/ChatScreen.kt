@@ -1,12 +1,17 @@
 package com.secret.agentchat.presentation.chat
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,9 +66,11 @@ fun ChatScreen(
         },
         bottomBar = {
             MessageTextField(
+                modifier = Modifier.padding(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()),
                 message = state.currentMessage,
                 onTextChange = { onAction(ChatAction.UpdateMessage(it)) },
-                label = stringResource(R.string.message)
+                label = stringResource(R.string.message),
+                sendMessage = { onAction(ChatAction.SendMessage(state.currentMessage)) }
             )
         }
     ) { paddingValues ->
@@ -71,6 +78,7 @@ fun ChatScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(vertical = 10.dp)
                 .padding(horizontal = 16.dp),
             reverseLayout = true
         ) {
@@ -87,13 +95,15 @@ fun ChatScreen(
 
 @Composable
 fun MessageTextField(
+    modifier: Modifier,
     message: String,
     label: String,
     onTextChange: (String) -> Unit,
-    keyBoardType: KeyboardType = KeyboardType.Text
+    keyBoardType: KeyboardType = KeyboardType.Text,
+    sendMessage: () -> Unit
 ) {
     OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().height(60.dp),
+        modifier = modifier.fillMaxWidth().height(50.dp),
         value = message,
         placeholder = {
             Text(text = label, color = MaterialTheme.colorScheme.secondary)
@@ -106,6 +116,7 @@ fun MessageTextField(
         ),
         trailingIcon = {
             Image(
+                modifier = Modifier.clickable{ sendMessage() },
                 painter = painterResource(R.drawable.send_icon),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondaryContainer),
                 contentDescription = stringResource(R.string.send_message)

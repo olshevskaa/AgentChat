@@ -22,10 +22,30 @@ class ChatRepoImpl(
             if(!response.isSuccessful) return null
             response.body()?.let { chatList ->
                 return chatList.map { chat ->
-                    val decryptedMessage = cryptoHelper.decryptMessage(chat.lastMessage)
+                    val decryptedMessage = cryptoHelper.decryptMessage(
+                        chat.lastMessage,
+                        userId.toString()
+                    )
                     chat.toChatPreview(decryptedMessage.toString())
                 }
             } ?: return null
+        }catch(e: Exception) {
+            return null
+        }
+    }
+
+    override suspend fun getChatByParticipants(
+        recipientId: String,
+    ): ChatPreview? {
+        try {
+            val userId = sharedPref.getUserId().first().toString()
+            val response = api.getChatByParticipants(recipientId, userId)
+            if(!response.isSuccessful) return null
+            response.body()?.let { chat ->
+                val decryptedMessage = cryptoHelper.decryptMessage(chat.lastMessage, userId)
+                return chat.toChatPreview(decryptedMessage.toString())
+            }
+            return null
         }catch(e: Exception) {
             return null
         }

@@ -35,7 +35,7 @@ import com.secret.agentchat.presentation.search_user.components.UserItem
 @Composable
 fun SearchUserScreen(
     goBack: () -> Unit,
-    toChat: () -> Unit,
+    toChat: (String, String) -> Unit,
     viewModel: SearchUserViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
@@ -53,6 +53,10 @@ fun SearchUserScreen(
                         message = event.message.asString(context)
                     )
                 }
+            }
+
+            is SearchUserEvents.NavigateToChat -> {
+                toChat(event.userId, event.chatId)
             }
         }
     }
@@ -81,7 +85,7 @@ fun SearchUserScreen(
             LazyColumn{
                 items(state.users) { user ->
                     UserItem(user) {
-                        toChat()
+                        viewModel.onAction(SearchUserAction.NavigateToChat(user))
                     }
                 }
             }

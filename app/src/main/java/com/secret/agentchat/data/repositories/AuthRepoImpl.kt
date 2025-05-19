@@ -24,6 +24,7 @@ class AuthRepoImpl(
             if (response.isSuccessful){
                 response.body()?.let {
                     sharedPref.put(SharedPref.TOKEN_KEY, it.token)
+                    sharedPref.put(SharedPref.USER_ID_KEY, it.userId)
                     return it
                 }
             }
@@ -36,11 +37,12 @@ class AuthRepoImpl(
 
     override suspend fun register(data: RegisterData): RegisterResponse? {
         try {
-            val userId = ObjectId().toString()
+            val userId = ObjectId().toHexString()
             keyStore.generateKeyPairInKeystore(userId)
             val publicKey = keyStore.getPublicKey(userId)
             publicKey?.let {
                 val request = RegisterRequest(
+                    id = userId,
                     username = data.username,
                     email = data.email,
                     password = data.password,

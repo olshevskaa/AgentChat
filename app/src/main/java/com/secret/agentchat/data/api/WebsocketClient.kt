@@ -4,12 +4,18 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import okhttp3.logging.HttpLoggingInterceptor
 
 class WebSocketClient(
     private val url: String,
 ) {
 
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
+        .build()
+
     private var webSocket: WebSocket? = null
 
     fun connect(listener: WebSocketListener) {
@@ -17,8 +23,8 @@ class WebSocketClient(
         webSocket = client.newWebSocket(request, listener)
     }
 
-    fun send(message: String) {
-        webSocket?.send(message)
+    fun send(event: String) {
+        webSocket?.send(event)
     }
 
     fun close() {

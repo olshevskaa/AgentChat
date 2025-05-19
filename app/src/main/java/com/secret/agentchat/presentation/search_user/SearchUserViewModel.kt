@@ -16,14 +16,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.secret.agentchat.R
+import com.secret.agentchat.data.datastore.SharedPref
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 
 @OptIn(FlowPreview::class)
 class SearchUserViewModel(
     private val userRepo: UserRepo,
-    private val chatRepo: ChatRepo
+    private val chatRepo: ChatRepo,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchUserState())
@@ -45,7 +47,7 @@ class SearchUserViewModel(
                 if(users != null){
                     _state.update { it.copy(users = users) }
                 }else{
-                    _eventChannel.send(SearchUserEvents.ShowError(UiText.StringResource(R.string.unable_to_fetch)))
+                    _eventChannel.send(SearchUserEvents.ShowError(UiText.StringResource(R.string.unable_to_fetch_users)))
                 }
 
                 _state.update { it.copy(isLoading = false) }
@@ -55,7 +57,22 @@ class SearchUserViewModel(
 
     fun onAction(action: SearchUserAction) {
         when (action) {
-            SearchUserAction.CreateNewChat -> {}
+            is SearchUserAction.NavigateToChat -> {
+                viewModelScope.launch{
+                    val chat = withContext(Dispatchers.IO){
+                        chatRepo.getChatByParticipants(action.recipient.id)
+                    }
+                    if(chat!= null){
+                        _eventChannel.send(
+                            SearchUserEvents.NavigateToChat(chatId = chat.id, userId = action.recipient.id)
+                        )
+                    }else{
+                        _eventChannel.send(
+                            SearchUserEvents.NavigateToChat(chatId = "", userId = action.recipient.id)
+                        )
+                    }
+                }
+            }
             is SearchUserAction.UpdateQuery -> {
                 _query.tryEmit(action.query)
             }

@@ -17,6 +17,7 @@ import com.secret.agentchat.domain.repositories.MessageRepo
 import com.secret.agentchat.domain.repositories.UserRepo
 import com.secret.agentchat.domain.utils.validators.EmailPatternValidator
 import com.secret.agentchat.domain.utils.validators.PatternValidator
+import com.secret.agentchat.domain.utils.validators.UserDataValidator
 import okhttp3.WebSocketListener
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -37,15 +38,17 @@ val applicationModule = module {
 
     factory<AuthRepo> { AuthRepoImpl(get(), get(), get()) }
 
-    factory<UserRepo> { UserRepoImpl(get()) }
+    factory<UserRepo> { UserRepoImpl(get(), get()) }
 
-    factory<MessageRepo> { MessageRepoImpl(get(), get()) }
+    factory<MessageRepo> { MessageRepoImpl(get(), get(), get()) }
 
     factory<ChatRepo> { ChatRepoImpl(get(), get(), get()) }
 
     single<PatternValidator>{ EmailPatternValidator }
 
-    single<WebSocketListener>{ ChatWebSocketListener() }
+    single { UserDataValidator(get()) }
+
+    single{ ChatWebSocketListener(get()) }
 
     single<WebSocketClient>{ WebSocketClient(RetrofitClient.WS_URL) }
 }

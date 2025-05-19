@@ -1,5 +1,6 @@
 package com.secret.agentchat.data.crypto
 
+import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.data.keystore.KeyStoreHelper
 import com.secret.agentchat.domain.models.SendMessageParams
 import com.secret.agentchat.domain.requests.SendMessageRequest
@@ -8,31 +9,33 @@ import java.time.Instant
 import java.util.Base64
 
 class CryptoHelper(
-    private val keyStore: KeyStoreHelper
+    private val keyStore: KeyStoreHelper,
 ) {
-fun decryptMessage(message: MessageResponse): String? {
-        try {
-            val privateKey = keyStore.getPrivateKey(message.recipient)
-            privateKey?.let {
-                val aesKeyBytes = RSAUtils.decryptWithPrivateKey(
-                    Base64.getDecoder().decode(message.encryptedAESKey),
-                    privateKey
-                )
 
-                val aesKey = AESUtils.keyFromBase64(Base64.getEncoder().encodeToString(aesKeyBytes))
 
-                val decryptedText = AESUtils.decrypt(
-                    encryptedData = message.encryptedMessage,
-                    iv = message.encryptedMessage.substring(0, 24),
-                    key = aesKey
-                )
-                return decryptedText
-            } ?: return null
+    fun decryptMessage(message: MessageResponse, userId: String): String? {
+            try {
+                val privateKey = keyStore.getPrivateKey(userId)
+                privateKey?.let {
+                    val aesKeyBytes = RSAUtils.decryptWithPrivateKey(
+                        Base64.getDecoder().decode(message.encryptedAESKey),
+                        privateKey
+                    )
 
-        } catch (e: Exception) {
-            return null
+                    val aesKey = AESUtils.keyFromBase64(Base64.getEncoder().encodeToString(aesKeyBytes))
+
+                    val decryptedText = AESUtils.decrypt(
+                        encryptedData = message.encryptedMessage,
+                        iv = message.encryptedMessage.substring(0, 24),
+                        key = aesKey
+                    )
+                    return decryptedText
+                } ?: return null
+
+            } catch (e: Exception) {
+                return null
+            }
         }
-    }
 
     fun encryptMessage(params: SendMessageParams): SendMessageRequest? {
         return try {

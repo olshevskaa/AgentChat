@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.secret.agentchat.core.presentation.ErrorSnackBar
 import com.secret.agentchat.core.presentation.ObserveAsEvents
-import com.secret.agentchat.presentation.chat.ChatListViewModel
 import com.secret.agentchat.presentation.chat_list.components.ChatListItem
 import com.secret.agentchat.presentation.chat_list.components.ChatListTopBar
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ChatListScreen(
-    toChat: (String) -> Unit,
+    toChat: (String, String) -> Unit,
     toSearch: () -> Unit,
     viewModel: ChatListViewModel = koinViewModel()
 ) {
@@ -41,6 +40,8 @@ fun ChatListScreen(
                     snackBarHostState.showSnackbar(event.message.asString(context))
                 }
             }
+
+            is ChatListEvents.NavigateToChat -> { toChat(event.chatId, event.userId) }
         }
     }
     
@@ -61,7 +62,7 @@ fun ChatListScreen(
                 items(state.chats) { chat ->
                     ChatListItem(
                         chat = chat,
-                        onClick = { toChat(chat.id) }
+                        onClick = { viewModel.navigateToChat(chat) }
                     )
                 }
             }

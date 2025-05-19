@@ -45,7 +45,10 @@ class RetrofitClient(private val sharedPref: SharedPref) {
     }
 
     companion object{
-        const val BASE_URL = "http://10.0.2.2:5000/" // replace with your IP
+        const val BASE_URL = "http://10.0.2.2:5000/"
         const val WS_URL = "ws://10.0.2.2:5000/"
+
+//        const val BASE_URL = "https://chat-backend-n1pd.onrender.com/"
+//        const val WS_URL = "ws://chat-backend-n1pd.onrender.com/"
     }
 }

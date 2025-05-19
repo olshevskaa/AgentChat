@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.secret.agentchat.R
 import com.secret.agentchat.core.presentation.UiText
+import com.secret.agentchat.data.datastore.SharedPref
 import com.secret.agentchat.domain.repositories.AuthRepo
 import com.secret.agentchat.domain.requests.LoginRequest
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val authRepo: AuthRepo
+    private val authRepo: AuthRepo,
+    private val sharedPref: SharedPref
 ) : ViewModel() {
 
     private val _loginState = MutableStateFlow(LoginState())

@@ -28,6 +28,12 @@ interface ApiService {
         @Body body: CreateChatRequest
     ): Response<ChatResponse>
 
+    @GET("chats/{userA}/{userB}")
+    suspend fun getChatByParticipants(
+        @Path("userA") userA: String,
+        @Path("userB") userB: String
+    ): Response<ChatResponse>
+
     @GET("chats/user/{userId}")
     suspend fun getChats(
         @Path("userId") userId: String

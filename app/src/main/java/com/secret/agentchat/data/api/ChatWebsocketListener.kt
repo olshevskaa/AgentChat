@@ -2,8 +2,8 @@ package com.secret.agentchat.data.api
 
 import com.secret.agentchat.data.crypto.CryptoHelper
 import com.secret.agentchat.domain.models.Message
+import com.secret.agentchat.domain.models.WebSocketEvent
 import com.secret.agentchat.domain.responses.MessageResponse
-import com.secret.agentchat.domain.utils.mappers.toMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,15 +16,14 @@ class ChatWebSocketListener(
     private val cryptoHelper: CryptoHelper
 ): WebSocketListener() {
 
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages: StateFlow<List<Message>> = _messages.asStateFlow()
+    private val _messages = MutableStateFlow<List<MessageResponse>>(emptyList())
+    val messages: StateFlow<List<MessageResponse>> = _messages.asStateFlow()
 
-    override fun onMessage(webSocket: WebSocket, text: String) {
-        val messageResponse = Json.decodeFromString<MessageResponse>(text)
-        val decMessage = cryptoHelper.decryptMessage(messageResponse)
-        val message = messageResponse.toMessage(decMessage.toString())
+    override fun onMessage(webSocket: WebSocket, event: String) {
+        val eventResponse = Json.decodeFromString<WebSocketEvent>(event)
+        val data = Json.decodeFromString<MessageResponse>(eventResponse.data)
         _messages.update { currentMessages ->
-            currentMessages + message
+            currentMessages + data
         }
     }
 }

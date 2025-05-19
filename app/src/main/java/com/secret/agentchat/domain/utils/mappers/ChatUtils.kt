@@ -6,7 +6,7 @@ import com.secret.agentchat.domain.responses.ChatResponse
 fun ChatResponse.toChatPreview(decryptedMessage: String): ChatPreview {
     return ChatPreview(
         id = id,
-        name = lastMessage.id,
+        participants = participants,
         lastMessage = decryptedMessage,
         timestamp = lastMessage.createdAt
     )
